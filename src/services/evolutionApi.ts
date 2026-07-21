@@ -21,13 +21,16 @@ export class EvolutionApiService {
   }
 
   async createInstance(instanceName: string, tenantId: string): Promise<any> {
+    const webhookUrl = process.env.EVOLUTION_WEBHOOK_URL || 
+      `${config.env === 'production' ? 'https' : 'http'}://${config.env === 'production' ? 'payapi.smartintegrate.co.za' : 'localhost:3000'}/webhooks/whatsapp`;
+
     const response = await this.client.post('/instance/create', {
       instanceName: `${tenantId}-${instanceName}`,
       integration: 'WHATSAPP-BAILEYS',
       qrcode: true,
       webhook: {
         enabled: true,
-        url: `${config.env === 'production' ? 'https' : 'http'}://${config.env === 'production' ? 'api.smartpay.com' : 'localhost:3000'}/webhooks/whatsapp`,
+        url: webhookUrl,
         byEvents: false,
         base64: false,
         events: [
