@@ -1,7 +1,7 @@
-import { Knex } from 'knex';
-
-export async function up(knex: Knex): Promise<void> {
-  // Dunning rules table
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function(knex) {
   await knex.schema.createTable('dunning_rules', (table) => {
     table.uuid('id').primary().defaultTo(knex.fn.uuid());
     table.uuid('tenant_id').references('id').inTable('tenants').onDelete('CASCADE');
@@ -14,12 +14,10 @@ export async function up(knex: Knex): Promise<void> {
     table.text('reminder3_message');
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
-
     table.unique(['tenant_id']);
     table.index(['enabled']);
   });
 
-  // Dunning logs table
   await knex.schema.createTable('dunning_logs', (table) => {
     table.uuid('id').primary().defaultTo(knex.fn.uuid());
     table.uuid('tenant_id').references('id').inTable('tenants').onDelete('CASCADE');
@@ -29,14 +27,16 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp('sent_at').defaultTo(knex.fn.now());
     table.enum('status', ['sent', 'failed', 'cancelled']).defaultTo('sent');
     table.text('error_message');
-
     table.index(['tenant_id', 'invoice_id']);
     table.index(['invoice_id', 'reminder_number']);
     table.index(['status']);
   });
-}
+};
 
-export async function down(knex: Knex): Promise<void> {
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function(knex) {
   await knex.schema.dropTableIfExists('dunning_logs');
   await knex.schema.dropTableIfExists('dunning_rules');
-}
+};
