@@ -14,8 +14,12 @@ import whatsappRoutes from './api/whatsapp';
 import webhookRoutes from './api/webhooks';
 import demoRoutes from './api/demo';
 import messagingRoutes from './api/messaging';
+import whatsappSyncRoutes from './api/whatsappSync';
 
 const app = express();
+
+// Trust proxy (required for rate limiting behind Dockploy/Nginx)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
@@ -50,6 +54,7 @@ app.use(`/api/${config.apiVersion}/customers`, customerRoutes);
 app.use(`/api/${config.apiVersion}/invoices`, invoiceRoutes);
 app.use(`/api/${config.apiVersion}/whatsapp`, whatsappRoutes);
 app.use(`/api/${config.apiVersion}/messaging`, messagingRoutes);
+app.use(`/api/${config.apiVersion}/whatsapp-sync`, whatsappSyncRoutes);
 
 // Webhook routes (no auth required)
 app.use('/webhooks', webhookRoutes);

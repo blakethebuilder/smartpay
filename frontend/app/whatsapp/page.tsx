@@ -44,8 +44,27 @@ const { tenant } = useAuthStore();
 
   useEffect(() => {
     if (!isReady || !isAuthenticated) return;
-    fetchInstances();
+    syncAndFetch();
   }, [isReady, isAuthenticated]);
+
+  const syncAndFetch = async () => {
+    try {
+      // Sync status from Evolution API first
+      await api.post('/whatsapp-sync/sync');
+      // Then fetch updated instances
+      const response = await whatsappApi.listInstances();
+      setInstances(response.data);
+    } catch (error) {
+      console.error('Failed to sync/fetch instances:', error);
+      // Try fetching anyway
+      try {
+        const response = await whatsappApi.listInstances();
+        setInstances(response.data);
+      } catch (e) {}
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchInstances = async () => {
     try {
