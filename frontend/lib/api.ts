@@ -4,7 +4,7 @@ function getApiUrl(): string {
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host === 'smartpay.smartintegrate.co.za') {
-      return 'https://api.smartintegrate.co.za';
+      return 'https://payapi.smartintegrate.co.za';
     }
   }
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
