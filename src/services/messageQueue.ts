@@ -26,7 +26,7 @@ const DEFAULT_CONFIG: QueueConfig = {
   minDelay: 3000,    // 3 seconds
   maxDelay: 7000,    // 7 seconds
   typingDuration: 3000,  // 3 seconds typing indicator
-  businessHoursOnly: true,
+  businessHoursOnly: false, // Disabled for now - enable in production
   businessHoursStart: 8,   // 8 AM SAST
   businessHoursEnd: 18,    // 6 PM SAST
   maxRetries: 3,
