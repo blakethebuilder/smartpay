@@ -88,7 +88,7 @@ export const whatsappApi = {
   createInstance: (data: { name: string }) => api.post<WhatsAppInstance>('/whatsapp/instances', data),
   getQRCode: (id: string) => api.get(`/whatsapp/instances/${id}/qr`),
   getStatus: (id: string) => api.get(`/whatsapp/instances/${id}/status`),
-  sendMessage: (data: { instanceId: string; customerId: string; content: string; type?: string; mediaUrl?: string }) => api.post<Message>('/whatsapp/messages', data),
+  sendMessage: (data: { instanceId: string; customerId: string; content: string; type?: string; mediaUrl?: string }) => api.post('/messaging/send', data),
   listMessages: (instanceId?: string, page = 1) => api.get<{ messages: Message[] }>(`/whatsapp/messages?page=${page}${instanceId ? `&instanceId=${instanceId}` : ''}`),
 };
 
