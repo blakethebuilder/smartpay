@@ -59,19 +59,22 @@ router.post('/send', requireAuth, tenantIsolation, validate(sendMessageSchema), 
       return;
     }
 
+    // Sanitize phone number for Evolution API (remove spaces, dashes, + prefix)
+    const cleanPhone = customer.phone.replace(/[\s\-\(\)\+]/g, '');
+
     // Send directly via Evolution API with typing indicator
     const { evolutionApi } = await import('../services/evolutionApi');
 
     try {
       // Send typing indicator
-      await evolutionApi.sendPresence(instance.instance_name, customer.phone, 'composing');
+      await evolutionApi.sendPresence(instance.instance_name, cleanPhone, 'composing');
 
       // Wait based on message length (humanization)
       const typingDuration = Math.min(2000 + (content.length * 10), 5000);
       await new Promise(resolve => setTimeout(resolve, typingDuration));
 
       // Stop typing indicator
-      await evolutionApi.sendPresence(instance.instance_name, customer.phone, 'paused');
+      await evolutionApi.sendPresence(instance.instance_name, cleanPhone, 'paused');
 
       // Small random delay (3-7 seconds)
       const delay = Math.floor(Math.random() * 4000) + 3000;
@@ -79,9 +82,9 @@ router.post('/send', requireAuth, tenantIsolation, validate(sendMessageSchema), 
 
       // Send the message
       if (type === 'media' && mediaUrl) {
-        await evolutionApi.sendMedia(instance.instance_name, customer.phone, mediaUrl, content);
+        await evolutionApi.sendMedia(instance.instance_name, cleanPhone, mediaUrl, content);
       } else {
-        await evolutionApi.sendMessage(instance.instance_name, customer.phone, content, false);
+        await evolutionApi.sendMessage(instance.instance_name, cleanPhone, content, false);
       }
 
       // Log the message
