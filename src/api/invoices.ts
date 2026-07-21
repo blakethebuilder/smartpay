@@ -14,7 +14,7 @@ const createInvoiceSchema = z.object({
   amount: z.number().positive(),
   currency: z.string().length(3).default('ZAR'),
   description: z.string().max(500).optional(),
-  dueDate: z.string().datetime().optional(),
+  dueDate: z.string().datetime().optional().or(z.literal('')).transform((val) => val || undefined),
   metadata: z.record(z.unknown()).optional(),
 });
 
