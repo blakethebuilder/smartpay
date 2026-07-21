@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { billingService } from '../services/billing';
 
 const router = Router();
 
-// Simulate payment (demo only)
-router.post('/simulate-payment', async (req: Request, res: Response) => {
+// Simulate payment (demo only - requires auth)
+router.post('/simulate-payment', requireAuth, requireRole('owner', 'admin'), async (req: Request, res: Response) => {
   try {
     const { reference } = req.body;
     

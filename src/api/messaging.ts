@@ -173,7 +173,7 @@ router.post('/dunning/cancel/:invoiceId', requireAuth, tenantIsolation, async (r
 });
 
 // Process dunning (admin endpoint - would be called by cron)
-router.post('/dunning/process', async (req: Request, res: Response) => {
+router.post('/dunning/process', requireAuth, requireRole('owner', 'admin'), async (req: Request, res: Response) => {
   try {
     await dunningService.processUnpaidInvoices();
     res.json({ message: 'Dunning processing completed' });

@@ -57,10 +57,24 @@ app.use('/webhooks', webhookRoutes);
 // Demo routes (no auth required)
 app.use('/api/v1/demo', demoRoutes);
 
+// HTML escape function to prevent XSS
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
 // Demo payment page (no auth required - for testing)
 app.get('/pay/demo/:reference', async (req, res) => {
-  const { reference } = req.params;
-  const { gateway, amount, currency } = req.query;
+  const reference = escapeHtml(req.params.reference);
+  const gateway = escapeHtml(req.query.gateway as string || '');
+  const amount = parseFloat(req.query.amount as string) || 0;
+  const currency = escapeHtml(req.query.currency as string || 'ZAR');
 
   const gatewayName = gateway === 'paystack' ? 'Paystack'
     : gateway === 'ozow' ? 'Ozow'
@@ -69,8 +83,8 @@ app.get('/pay/demo/:reference', async (req, res) => {
     : 'Unknown';
 
   const formattedAmount = currency === 'ZAR' 
-    ? `R ${parseFloat(amount as string).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
-    : `${currency} ${parseFloat(amount as string).toLocaleString()}`;
+    ? `R ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+    : `${currency} ${amount.toLocaleString()}`;
 
   res.send(`
     <!DOCTYPE html>

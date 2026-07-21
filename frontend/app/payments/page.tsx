@@ -19,12 +19,9 @@ export default function PaymentsPage() {
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchPayments();
-  }, [token, router]);
+  }, [isReady, isAuthenticated]);
 
   const fetchPayments = async () => {
     try {

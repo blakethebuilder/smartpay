@@ -26,8 +26,8 @@ const createPaymentLinkSchema = z.object({
 // List invoices
 router.get('/', requireAuth, tenantIsolation, async (req, res) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 50;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit as string) || 50));
     const status = req.query.status as string;
 
     let query = db('invoices')

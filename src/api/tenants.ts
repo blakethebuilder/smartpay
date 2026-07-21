@@ -5,7 +5,7 @@ import { validate } from '../middleware/validation';
 import { z } from 'zod';
 import { db } from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
-import { decrypt } from '../utils/encryption';
+import { encrypt, decrypt } from '../utils/encryption';
 
 const router = Router();
 
@@ -99,9 +99,9 @@ router.post('/merchants', requireAuth, requireRole('owner', 'admin'), tenantIsol
         id: uuidv4(),
         tenant_id: req.context!.tenantId,
         gateway: req.body.gateway,
-        public_key_encrypted: req.body.publicKey, // Will be encrypted in production
-        secret_key_encrypted: req.body.secretKey,
-        webhook_secret_encrypted: req.body.webhookSecret,
+        public_key_encrypted: encrypt(req.body.publicKey),
+        secret_key_encrypted: encrypt(req.body.secretKey),
+        webhook_secret_encrypted: req.body.webhookSecret ? encrypt(req.body.webhookSecret) : null,
         is_active: true,
         created_at: new Date(),
         updated_at: new Date(),
