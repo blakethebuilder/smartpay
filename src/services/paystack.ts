@@ -43,7 +43,7 @@ export class PaystackService {
         amount: amount * 100, // Paystack uses kobo/cents
         email,
         metadata,
-        callback_url: `${config.env === 'production' ? 'https' : 'http'}://${config.env === 'production' ? 'api.smartpay.com' : 'localhost:3000'}/payments/paystack/callback`,
+        callback_url: `${process.env.PAYMENT_BASE_URL || (config.env === 'production' ? 'https://payapi.smartintegrate.co.za' : 'http://localhost:3000')}/webhooks/paystack`,
       },
       {
         headers: {

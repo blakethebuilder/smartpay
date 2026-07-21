@@ -68,9 +68,8 @@ export class BillingService {
     }
 
     const reference = `SP-${tenantId.substring(0, 8)}-${invoiceId.substring(0, 8)}-${Date.now()}`;
-    const callbackBase = process.env.NODE_ENV === 'production'
-      ? 'https://api.smartpay.com'
-      : 'http://localhost:3000';
+    const callbackBase = process.env.PAYMENT_BASE_URL || 
+      (process.env.NODE_ENV === 'production' ? 'https://payapi.smartintegrate.co.za' : 'http://localhost:3000');
 
     // Create payment record
     const [payment] = await db('payments')
