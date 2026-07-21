@@ -22,8 +22,10 @@ RUN adduser --system --uid 1001 smartpay
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
+COPY knexfile.js ./
+COPY src/db/migrations ./src/db/migrations
 
 USER smartpay
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "npx knex migrate:latest && node dist/index.js"]
