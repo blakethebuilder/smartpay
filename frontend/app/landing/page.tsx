@@ -255,7 +255,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-6 text-lg text-gray-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Automate payment links, eliminate manual copy-pasting, and get paid instantly via Paystack and Ozow—all directly inside WhatsApp.
+                Send invoices over WhatsApp, collect payments instantly. No PDFs, no POP chasing, no manual reconciliation.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
