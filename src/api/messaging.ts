@@ -59,24 +59,52 @@ router.post('/send', requireAuth, tenantIsolation, validate(sendMessageSchema), 
       return;
     }
 
-    // Add to queue with humanization
-    const jobId = await messageQueue.addJob({
-      tenantId: req.context!.tenantId,
-      instanceId,
-      customerId,
-      customerPhone: customer.phone,
-      content,
-      type,
-      mediaUrl,
-      priority,
-    });
+    // Send directly via Evolution API with typing indicator
+    const { evolutionApi } = await import('../services/evolutionApi');
 
-    res.json({
-      jobId,
-      status: 'queued',
-      message: 'Message added to queue with anti-ban delays',
-      queueSize: messageQueue.getQueueSize(),
-    });
+    try {
+      // Send typing indicator
+      await evolutionApi.sendPresence(instance.instance_name, customer.phone, 'composing');
+
+      // Wait based on message length (humanization)
+      const typingDuration = Math.min(2000 + (content.length * 10), 5000);
+      await new Promise(resolve => setTimeout(resolve, typingDuration));
+
+      // Stop typing indicator
+      await evolutionApi.sendPresence(instance.instance_name, customer.phone, 'paused');
+
+      // Small random delay (3-7 seconds)
+      const delay = Math.floor(Math.random() * 4000) + 3000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+
+      // Send the message
+      if (type === 'media' && mediaUrl) {
+        await evolutionApi.sendMedia(instance.instance_name, customer.phone, mediaUrl, content);
+      } else {
+        await evolutionApi.sendMessage(instance.instance_name, customer.phone, content, false);
+      }
+
+      // Log the message
+      await db('messages').insert({
+        id: require('uuid').v4(),
+        tenant_id: req.context!.tenantId,
+        instance_id: instanceId,
+        customer_id: customerId,
+        type: type || 'text',
+        content,
+        status: 'sent',
+        sent_at: new Date(),
+        created_at: new Date(),
+      });
+
+      res.json({
+        status: 'sent',
+        message: 'Message sent successfully',
+      });
+    } catch (error: any) {
+      console.error('Failed to send message:', error);
+      res.status(500).json({ error: 'Failed to send message: ' + (error.message || 'Unknown error') });
+    }
   } catch (error) {
     console.error('Failed to queue message:', error);
     res.status(500).json({ error: 'Failed to queue message' });
