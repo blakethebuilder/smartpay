@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
 import { whatsappApi } from '@/lib/api';
 import { Modal, Spinner, StatusBadge, EmptyState } from '@/components/ui';
@@ -30,7 +31,8 @@ interface WhatsAppInstance {
 
 export default function WhatsAppPage() {
   const router = useRouter();
-  const { tenant, token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
+const { tenant } = useAuthStore();
   const [instances, setInstances] = useState<WhatsAppInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);

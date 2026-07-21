@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
 import { tenantApi, invoiceApi } from '@/lib/api';
 import { Modal, Spinner } from '@/components/ui';
@@ -29,7 +30,8 @@ type CredentialFormData = z.infer<typeof credentialSchema>;
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { tenant, token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
+const { tenant } = useAuthStore();
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [gateways, setGateways] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

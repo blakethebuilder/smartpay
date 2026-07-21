@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
 import { invoiceApi, customerApi } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -22,7 +23,7 @@ import {
 
 export default function InvoicesPage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
   const [invoices, setInvoices] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,12 +41,9 @@ export default function InvoicesPage() {
   const [paymentLink, setPaymentLink] = useState('');
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchData();
-  }, [token, router, page, statusFilter]);
+  }, [isReady, isAuthenticated, page, statusFilter]);
 
   const fetchData = async () => {
     try {
@@ -66,7 +64,6 @@ export default function InvoicesPage() {
   };
 
   const handleGenerateLink = async () => {
-    if (!selectedInvoice || !selectedGateway) return;
     setGenerating(true);
     try {
       const response = await invoiceApi.createPaymentLink({

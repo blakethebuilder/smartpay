@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
 import { api } from '@/lib/api';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
@@ -11,7 +12,7 @@ import { Search, CreditCard, ExternalLink } from 'lucide-react';
 
 export default function PaymentsPage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

@@ -7,13 +7,13 @@ const config = {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432'),
       database: process.env.DB_NAME || 'smartpay',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'changeme',
+      user: process.env.DB_USER || 'bfmacbook',
+      password: process.env.DB_PASSWORD || '',
     },
     pool: { min: 2, max: 10 },
     migrations: {
-      directory: './src/db/migrations',
-      extension: 'ts',
+      directory: './migrations',
+      extension: 'js',
     },
   },
 

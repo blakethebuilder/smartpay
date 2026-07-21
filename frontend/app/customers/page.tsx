@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store';
+import { useRequireAuth } from '@/lib/hooks';
 import { customerApi } from '@/lib/api';
 import { DataTable, Spinner, EmptyState } from '@/components/ui';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -12,7 +12,7 @@ import { Plus, Search, Users, Phone, Mail } from 'lucide-react';
 
 export default function CustomersPage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -20,12 +20,9 @@ export default function CustomersPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchCustomers();
-  }, [token, router, page]);
+  }, [isReady, isAuthenticated, page]);
 
   const fetchCustomers = async () => {
     try {

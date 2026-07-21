@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
 import { invoiceApi, customerApi, whatsappApi } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -30,7 +31,8 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { tenant, token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
+  const { tenant } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats>({
     totalInvoices: 0,
     paidInvoices: 0,
@@ -45,12 +47,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchDashboardData();
-  }, [token, router]);
+  }, [isReady, isAuthenticated]);
 
   const fetchDashboardData = async () => {
     try {
