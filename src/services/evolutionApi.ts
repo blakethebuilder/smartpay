@@ -55,11 +55,17 @@ export class EvolutionApiService {
   }
 
   async sendPresence(instanceName: string, to: string, presence: 'composing' | 'recording' | 'paused'): Promise<any> {
-    const response = await this.client.post(`/chat/sendPresence/${instanceName}`, {
-      number: to,
-      presence,
-    });
-    return response.data;
+    try {
+      const response = await this.client.post(`/chat/sendPresence/${instanceName}`, {
+        number: to,
+        presence,
+        delay: 3000,
+      });
+      return response.data;
+    } catch (error) {
+      // Presence errors are non-fatal, continue with message
+      return null;
+    }
   }
 
   async sendMessage(instanceName: string, to: string, message: string, useTypingIndicator: boolean = true): Promise<any> {
