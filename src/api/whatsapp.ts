@@ -9,7 +9,7 @@ const router = Router();
 
 // Validation schemas
 const createInstanceSchema = z.object({
-  name: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/),
+  name: z.string().min(2).max(50),
 });
 
 const sendMessageSchema = z.object({

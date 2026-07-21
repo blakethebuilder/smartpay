@@ -5,15 +5,22 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class WhatsAppService {
   async createInstance(tenantId: string, instanceName: string): Promise<WhatsAppInstance> {
+    // Sanitize instance name for Evolution API (lowercase, alphanumeric, hyphens only)
+    const sanitizedName = instanceName
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
     // Create instance in Evolution API
-    const evolutionInstance = await evolutionApi.createInstance(instanceName, tenantId);
-    
-    // Store in database
+    const evolutionInstance = await evolutionApi.createInstance(sanitizedName, tenantId);
+
+    // Store in database with original name
     const [instance] = await db('whatsapp_instances')
       .insert({
         id: uuidv4(),
         tenant_id: tenantId,
-        instance_name: `${tenantId}-${instanceName}`,
+        instance_name: `${tenantId}-${sanitizedName}`,
         instance_id: evolutionInstance.instance?.instanceId || '',
         status: 'connecting',
         created_at: new Date(),
