@@ -2,7 +2,10 @@ import axios from 'axios';
 
 function getApiUrl(): string {
   if (typeof window !== 'undefined') {
-    return window.location.origin;
+    const host = window.location.hostname;
+    if (host === 'smartpay.smartintegrate.co.za') {
+      return 'https://api.smartintegrate.co.za';
+    }
   }
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 }
