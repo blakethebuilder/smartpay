@@ -104,10 +104,10 @@ function WhatsAppMock() {
 
 /* ─── Section: Problem ─── */
 const painPoints = [
-  { icon: Clock, label: 'Generate payment link in Paystack dashboard' },
-  { icon: MessageSquare, label: 'Switch to WhatsApp, paste link manually' },
-  { icon: RefreshCw, label: 'Wait for customer, then follow up again' },
-  { icon: Shield, label: 'Chase EFT proof of payment via screenshots' },
+  { icon: CreditCard, label: 'Create & send invoice — PDF via email or WhatsApp' },
+  { icon: Clock, label: 'Wait for manual EFT — no confirmation, no timeline' },
+  { icon: MessageSquare, label: 'Chase POP proof — blurry screenshot via email' },
+  { icon: RefreshCw, label: 'Reconcile manually — match payments to invoices in a spreadsheet' },
 ];
 
 /* ─── Section: How it works ─── */
@@ -300,10 +300,10 @@ export default function LandingPage() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <p className="text-sm font-semibold text-primary-400 tracking-wide uppercase mb-3">Sound familiar?</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              The manual copy-paste loop is killing your time
+              The invoice → EFT → POP → reconcile loop
             </h2>
             <p className="mt-4 text-gray-400 text-lg leading-relaxed">
-              You generate a payment link, switch to WhatsApp, paste it, wait, follow up, chase EFT proofs...
+              Create an invoice, send it, wait for the EFT, chase the POP, reconcile manually. Then do it all again tomorrow.
             </p>
           </div>
 
@@ -316,16 +316,13 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center mb-4 group-hover:bg-red-500/20 transition-colors">
                   <p.icon className="w-5 h-5 text-red-400" />
                 </div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold text-red-400/60">Step {i + 1}</span>
-                </div>
                 <p className="text-sm text-gray-300 leading-relaxed">{p.label}</p>
               </div>
             ))}
           </div>
 
           <p className="text-center mt-8 text-gray-500 text-sm">
-            Every step is a chance for something to go wrong — or for your customer to give up.
+            One invoice, four pain points, zero automation. SmartPay fixes all four.
           </p>
         </div>
       </section>
