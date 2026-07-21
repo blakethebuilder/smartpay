@@ -148,12 +148,14 @@ app.get('/pay/demo/:reference', async (req, res) => {
             <span class="value">Pending</span>
           </div>
         </div>
-        <div id="status" class="status success" style="display: block;">
-          This is a demo payment link. Share this URL with your customer.
-        </div>
-        <button class="btn secondary" onclick="navigator.clipboard.writeText(window.location.href); this.textContent='Copied!';">
-          Copy Payment Link
+        <div id="status" class="status"></div>
+        <button id="payBtn" class="btn" onclick="simulatePayment()">
+          Pay Now (Demo)
         </button>
+        <button class="btn secondary" onclick="window.history.back()">
+          Cancel
+        </button>
+        <p class="note">This is a demo payment page. No real payment will be processed.</p>
       </div>
       <script>
         async function simulatePayment() {
