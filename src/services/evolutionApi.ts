@@ -51,7 +51,35 @@ export class EvolutionApiService {
     return response.data;
   }
 
-  async sendMessage(instanceName: string, to: string, message: string): Promise<any> {
+  async sendPresence(instanceName: string, to: string, presence: 'composing' | 'recording' | 'paused'): Promise<any> {
+    const response = await this.client.post(`/chat/sendPresence/${instanceName}`, {
+      number: to,
+      presence,
+    });
+    return response.data;
+  }
+
+  async sendMessage(instanceName: string, to: string, message: string, useTypingIndicator: boolean = true): Promise<any> {
+    if (useTypingIndicator) {
+      // Send typing indicator
+      await this.sendPresence(instanceName, to, 'composing');
+
+      // Calculate typing duration based on message length
+      const typingDuration = Math.min(2000 + (message.length * 10), 5000);
+      await new Promise(resolve => setTimeout(resolve, typingDuration));
+
+      // Stop typing indicator
+      await this.sendPresence(instanceName, to, 'paused');
+    }
+
+    const response = await this.client.post(`/message/sendText/${instanceName}`, {
+      number: to,
+      text: message,
+    });
+    return response.data;
+  }
+
+  async sendText(instanceName: string, to: string, message: string): Promise<any> {
     const response = await this.client.post(`/message/sendText/${instanceName}`, {
       number: to,
       text: message,

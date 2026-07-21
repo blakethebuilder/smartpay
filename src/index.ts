@@ -13,6 +13,7 @@ import invoiceRoutes from './api/invoices';
 import whatsappRoutes from './api/whatsapp';
 import webhookRoutes from './api/webhooks';
 import demoRoutes from './api/demo';
+import messagingRoutes from './api/messaging';
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use(`/api/${config.apiVersion}/tenants`, tenantRoutes);
 app.use(`/api/${config.apiVersion}/customers`, customerRoutes);
 app.use(`/api/${config.apiVersion}/invoices`, invoiceRoutes);
 app.use(`/api/${config.apiVersion}/whatsapp`, whatsappRoutes);
+app.use(`/api/${config.apiVersion}/messaging`, messagingRoutes);
 
 // Webhook routes (no auth required)
 app.use('/webhooks', webhookRoutes);
