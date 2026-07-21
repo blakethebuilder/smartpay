@@ -45,12 +45,9 @@ const { tenant } = useAuthStore();
   });
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchData();
-  }, [token, router]);
+  }, [isReady, isAuthenticated]);
 
   const fetchData = async () => {
     try {

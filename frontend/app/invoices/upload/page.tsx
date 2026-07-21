@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store';
+import { useRequireAuth } from '@/lib/hooks';
 import DashboardLayout from '@/components/DashboardLayout';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Upload, FileText, CheckCircle, AlertCircle, X } from 'lucide-react';
@@ -23,7 +23,7 @@ interface ParsedInvoice {
 
 export default function UploadInvoicePage() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { isReady, isAuthenticated } = useRequireAuth();
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);

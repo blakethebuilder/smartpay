@@ -43,12 +43,9 @@ const { tenant } = useAuthStore();
   const [loadingQR, setLoadingQR] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!isReady || !isAuthenticated) return;
     fetchInstances();
-  }, [token, router]);
+  }, [isReady, isAuthenticated]);
 
   const fetchInstances = async () => {
     try {

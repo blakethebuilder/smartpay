@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { tenantIsolation } from '../middleware/tenant';
 import { validate } from '../middleware/validation';
 import { z } from 'zod';
