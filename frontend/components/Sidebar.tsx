@@ -22,6 +22,7 @@ const navigation = [
   { name: 'Customers', href: '/customers', icon: Users },
   { name: 'Invoices', href: '/invoices', icon: FileText },
   { name: 'Payments', href: '/payments', icon: CreditCard },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'WhatsApp', href: '/whatsapp', icon: MessageSquare },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
