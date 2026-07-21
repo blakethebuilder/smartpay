@@ -4,11 +4,14 @@
 Multi-tenant SaaS platform for automated billing and WhatsApp communications for SMEs.
 
 **Stack:** Node.js/Express + PostgreSQL + Evolution API + Next.js  
-**Region:** South Africa (ZAR - South African Rand)
+**Region:** South Africa (ZAR - South African Rand)  
+**Domain:** https://smartpay.smartintegrate.co.za  
+**API:** https://payapi.smartintegrate.co.za  
+**GitHub:** https://github.com/blakethebuilder/smartpay
 
 ---
 
-## Current Status: v0.2.0 - Demo Ready
+## Current Status: v0.3.0 - LIVE (Deployed)
 
 ### Backend (✅ Complete)
 - [x] Express server with TypeScript
@@ -24,6 +27,18 @@ Multi-tenant SaaS platform for automated billing and WhatsApp communications for
 - [x] Ozow integration
 - [x] Idempotent webhook handling
 
+### Anti-Ban & Humanization (✅ Complete)
+- [x] Message queue with random jitter (3-7s delays between messages)
+- [x] Typing indicator before sending messages (scales with message length)
+- [x] Business hours throttling (08:00-18:00 SAST)
+- [x] Priority queue (high/normal/low)
+
+### Dunning Automation (✅ Complete)
+- [x] Auto-reminders after 24h/48h/72h unpaid invoices
+- [x] Configurable reminder messages per tenant
+- [x] Dunning logs for tracking
+- [x] Auto-cancel when invoice paid
+
 ### Payment Gateways (🇿🇦 South Africa)
 | Gateway | Status | Payment Methods |
 |---------|--------|-----------------|
@@ -32,115 +47,136 @@ Multi-tenant SaaS platform for automated billing and WhatsApp communications for
 | Payflex | 🔜 Coming Soon | Buy Now Pay Later |
 | PayJustNow | 🔜 Coming Soon | Buy Now Pay Later |
 
-### Database (✅ Complete)
-- [x] 10 tables created via Knex migrations
+### Database (✅ Complete - 12 tables)
+- [x] tenants, merchants, whatsapp_instances
+- [x] customers, invoices, payments, messages
+- [x] webhook_events, dunning_rules, dunning_logs
 - [x] Foreign keys with CASCADE delete
 - [x] Indexes for performance
 - [x] Check constraints on enums
 
-### Frontend (✅ Scaffolded)
-- [x] Next.js with TypeScript + Tailwind
-- [x] Zustand state management
-- [x] Axios API client with interceptors
-- [x] Login/Register pages
-- [x] Dashboard with stats
-- [x] Customer list + create form
-- [x] Invoice list + create form
-- [x] WhatsApp instance management
+### Frontend (✅ Complete - 13 pages)
+- [x] Login/Register with JWT auth
+- [x] Dashboard with stats, recent invoices, quick actions
+- [x] Customer management (list, create, search)
+- [x] Invoice management (list, create, filter by status)
+- [x] Invoice upload (PDF placeholder, Sage/Xero coming soon)
+- [x] Payment link generation with gateway selection
+- [x] WhatsApp instance management with QR codes
+- [x] Payment gateway credentials (Settings)
+- [x] Payment history with revenue summary
+- [x] Quick payment request modal
 
-### DevOps (✅ Scaffolded)
-- [x] Dockerfile (multi-stage)
-- [x] docker-compose.yml (PostgreSQL + App + Evolution + Redis)
-- [x] setup.sh automated script
+### DevOps (✅ Complete)
+- [x] Dockerfile (multi-stage build)
+- [x] docker-compose.yml for production
+- [x] Auto-migrations on deploy
+- [x] SSL via Let's Encrypt
+- [x] Evolution API connected (10.0.1.64:8080)
 
 ---
 
-## Demo Flow
+## Deployment (Dockploy VPS)
 
-### 1. Register Tenant
-```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Acme Corp","email":"demo@smartpay.com","password":"SecurePass123!"}'
-```
-
-### 2. Create Invoice (ZAR)
-```bash
-curl -X POST http://localhost:3000/api/v1/invoices \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"customerId":"<customer_id>","amount":1299.99,"currency":"ZAR","description":"Premium Subscription"}'
-```
-
-### 3. Generate Payment Link
-```bash
-curl -X POST http://localhost:3000/api/v1/invoices/payment-link \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"invoiceId":"<invoice_id>","gateway":"paystack"}'
-```
-
-### 4. Demo Payment Page
-Open the payment URL in browser - shows demo payment page with "Pay Now" button.
-
-### 5. Simulate Payment
-```bash
-curl -X POST http://localhost:3000/api/v1/demo/simulate-payment \
-  -H "Content-Type: application/json" \
-  -d '{"reference":"<payment_reference>"}'
-```
+| Service | Domain | Port |
+|---------|--------|------|
+| Frontend | smartpay.smartintegrate.co.za | 3010 |
+| Backend | payapi.smartintegrate.co.za | 3011 |
+| PostgreSQL | internal | 5432 |
+| Evolution API | whatsapp.smartintegrate.co.za | 8080 |
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Method | Auth | Status |
-|----------|--------|------|--------|
-| `/api/v1/auth/register` | POST | No | ✅ |
-| `/api/v1/auth/login` | POST | No | ✅ |
-| `/api/v1/auth/me` | GET | Yes | ✅ |
-| `/api/v1/auth/change-password` | POST | Yes | ✅ |
-| `/api/v1/tenants/profile` | GET/PUT | Yes | ✅ |
-| `/api/v1/tenants/merchants` | GET/POST | Yes | ✅ |
-| `/api/v1/customers` | GET/POST | Yes | ✅ |
-| `/api/v1/customers/:id` | GET/PUT/DELETE | Yes | ✅ |
-| `/api/v1/invoices` | GET/POST | Yes | ✅ |
-| `/api/v1/invoices/gateways` | GET | Yes | ✅ |
-| `/api/v1/invoices/payment-link` | POST | Yes | ✅ |
-| `/api/v1/whatsapp/instances` | GET/POST | Yes | ✅ |
-| `/api/v1/whatsapp/instances/:id/qr` | GET | Yes | ✅ |
-| `/api/v1/whatsapp/messages` | GET/POST | Yes | ✅ |
-| `/api/v1/demo/simulate-payment` | POST | No | ✅ |
-| `/pay/demo/:reference` | GET | No | ✅ |
-| `/webhooks/paystack` | POST | Signature | ✅ |
-| `/webhooks/ozow` | POST | None | ✅ |
-| `/webhooks/whatsapp` | POST | None | ✅ |
+### Authentication
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/auth/register` | POST | No |
+| `/api/v1/auth/login` | POST | No |
+| `/api/v1/auth/me` | GET | Yes |
+| `/api/v1/auth/change-password` | POST | Yes |
+
+### Tenants
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/tenants/profile` | GET/PUT | Yes |
+| `/api/v1/tenants/merchants` | GET/POST | Yes |
+| `/api/v1/tenants/merchants/:id` | DELETE | Yes |
+
+### Customers
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/customers` | GET/POST | Yes |
+| `/api/v1/customers/:id` | GET/PUT/DELETE | Yes |
+
+### Invoices
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/invoices` | GET/POST | Yes |
+| `/api/v1/invoices/gateways` | GET | Yes |
+| `/api/v1/invoices/payment-link` | POST | Yes |
+
+### WhatsApp
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/whatsapp/instances` | GET/POST | Yes |
+| `/api/v1/whatsapp/instances/:id/qr` | GET | Yes |
+| `/api/v1/whatsapp/messages` | GET/POST | Yes |
+
+### Messaging (Anti-Ban)
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/messaging/send` | POST | Yes |
+| `/api/v1/messaging/queue/status` | GET | Yes |
+| `/api/v1/messaging/queue/:jobId` | DELETE | Yes |
+
+### Dunning
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/api/v1/messaging/dunning` | GET/PUT | Yes |
+| `/api/v1/messaging/dunning/logs/:invoiceId` | GET | Yes |
+| `/api/v1/messaging/dunning/cancel/:invoiceId` | POST | Yes |
+
+### Webhooks
+| Endpoint | Method | Auth |
+|----------|--------|------|
+| `/webhooks/paystack` | POST | Signature |
+| `/webhooks/ozow` | POST | None |
+| `/webhooks/whatsapp` | POST | None |
 
 ---
 
-## Quick Start
+## Git History
 
-```bash
-# Start backend
-cd /Users/bfmacbook/Developer/SmartPay
-npm run dev
-
-# Run migrations
-npm run migrate
-
-# Test health
-curl http://localhost:3000/health
+```
+e514a43 Fix dunning migration: convert to CommonJS format
+1fa97a5 Add anti-ban features and dunning automation
+e16992b Fix Dockerfile: copy migrations folder in build stage
+a1d2c2d Rename API subdomain to payapi.smartintegrate.co.za
+0ef1f5e Fix API URL: use api.smartintegrate.co.za for production
+7d0cf28 Fix API URL: use runtime origin instead of build-time env var
+b6edff2 Fix migrations: use plain JavaScript instead of TypeScript
+c8d5ed7 Fix frontend Dockerfile: use env PORT instead of hardcoded
+87de763 Fix migrations: use compiled JS files instead of TypeScript
+2f567e2 Fix migrations: add knexfile.js and auto-run on deploy
+658e4ea Update Evolution API URL to Dockploy network IP (10.0.1.64)
+5d8a8d5 Fix docker-compose.yml for Dockploy
+a861959 Update domain to smartpay.smartintegrate.co.za
+8bb3d0c Fix docker-compose: remove deprecated version attribute
+f1ffb95 Initial commit: SmartPay multi-tenant billing platform
 ```
 
 ---
 
-## Next Steps
+## Next Steps (Phase 2)
 
-1. **Frontend install & run** - `cd frontend && npm install && npm run dev`
-2. **Wire up Paystack** - Add real API keys for live payments
-3. **Wire up Ozow** - Add real API keys for EFT payments
-4. **Evolution API** - Connect WhatsApp instance
-5. **Deploy** - Production Docker setup
+1. **Instant Payment Receipts** - Auto-send branded confirmation on webhook
+2. **Interactive WhatsApp Buttons** - Card UI with Pay Now button
+3. **Audit Trail** - Customer interaction timeline in dashboard
+4. **Invoice Upload** - PDF parsing and auto-extraction
+5. **Sage/Xero Integration** - Import invoices from accounting software
+6. **Payflex/PayJustNow** - Add BNPL payment options
 
 ---
 
@@ -149,16 +185,18 @@ curl http://localhost:3000/health
 ```
 smartpay/
 ├── src/
-│   ├── api/          # 7 route modules (auth, tenants, customers, invoices, whatsapp, webhooks, demo)
-│   ├── services/     # 5 service classes
+│   ├── api/          # 8 route modules (auth, tenants, customers, invoices, whatsapp, webhooks, demo, messaging)
+│   ├── services/     # 7 service classes (billing, evolutionApi, ozow, paystack, whatsapp, messageQueue, dunning)
 │   ├── middleware/    # Auth, tenant, validation, errors
-│   ├── db/migrations/ # Knex migrations
 │   ├── config/       # Database, env config
 │   ├── types/        # TypeScript interfaces
-│   └── utils/        # Encryption, helpers
-├── frontend/         # Next.js app
+│   └── utils/        # Encryption, format helpers
+├── migrations/       # JavaScript migrations (CommonJS)
+├── frontend/         # Next.js + Tailwind app
 ├── docker-compose.yml
-├── knexfile.ts
-├── .env
+├── Dockerfile
+├── knexfile.js
+├── .env.production
+├── DEPLOY.md
 └── STATUS.md
 ```
