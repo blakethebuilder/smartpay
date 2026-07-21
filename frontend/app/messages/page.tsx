@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/utils';
 import { StatusBadge, Spinner } from '@/components/ui';
 import DashboardLayout from '@/components/DashboardLayout';
-import { MessageSquare, Send, ArrowUpRight, ArrowDownLeft, Search } from 'lucide-react';
+import { MessageSquare, Send, ArrowUpRight, ArrowDownLeft, Search, Link2 } from 'lucide-react';
 
 interface Message {
   id: string;
