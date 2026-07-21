@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
-import { whatsappApi } from '@/lib/api';
+import { whatsappApi, api } from '@/lib/api';
 import { Modal, Spinner, StatusBadge, EmptyState } from '@/components/ui';
 import DashboardLayout from '@/components/DashboardLayout';
 import toast from 'react-hot-toast';
@@ -99,6 +99,17 @@ const { tenant } = useAuthStore();
       toast.success('Status refreshed');
     } catch (error: any) {
       toast.error('Failed to refresh status');
+    }
+  };
+
+  const handleDeleteInstance = async (instance: WhatsAppInstance) => {
+    if (!confirm(`Delete "${instance.instanceName}"? This cannot be undone.`)) return;
+    try {
+      await api.delete(`/whatsapp/instances/${instance.id}`);
+      toast.success('Instance deleted');
+      fetchInstances();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to delete instance');
     }
   };
 
@@ -202,10 +213,15 @@ const { tenant } = useAuthStore();
                   )}
                   <button
                     onClick={() => handleRefreshStatus(instance)}
-                    className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                    className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteInstance(instance)}
+                    className="inline-flex items-center justify-center px-3 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
