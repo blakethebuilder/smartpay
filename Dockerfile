@@ -24,6 +24,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/knexfile.js ./
+COPY --from=builder /app/migrations ./migrations
 
 USER smartpay
 EXPOSE 3000
