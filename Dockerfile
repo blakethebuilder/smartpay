@@ -9,6 +9,7 @@ FROM base AS builder
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY tsconfig.json ./
+COPY knexfile.js ./
 COPY src ./src
 RUN npm run build
 
@@ -22,10 +23,9 @@ RUN adduser --system --uid 1001 smartpay
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
-COPY knexfile.js ./
-COPY src/db/migrations ./src/db/migrations
+COPY --from=builder /app/knexfile.js ./
 
 USER smartpay
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx knex migrate:latest && node dist/index.js"]
+CMD ["sh", "-c", "npx knex migrate:latest --knexfile knexfile.js && node dist/index.js"]

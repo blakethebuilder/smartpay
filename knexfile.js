@@ -28,7 +28,7 @@ const config = {
     },
     pool: { min: 2, max: 20 },
     migrations: {
-      directory: './src/db/migrations',
+      directory: './dist/db/migrations',
       extension: 'js',
     },
   },
