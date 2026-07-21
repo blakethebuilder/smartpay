@@ -53,17 +53,29 @@ export class WhatsAppService {
       throw new Error('Instance not found');
     }
 
-    const status = await evolutionApi.getInstanceStatus(instance.instance_name);
-    
-    // Update status in database
-    await db('whatsapp_instances')
-      .where({ id: instanceId })
-      .update({
-        status: status.state === 'open' ? 'connected' : 'disconnected',
-        updated_at: new Date(),
-      });
+    try {
+      const status = await evolutionApi.getInstanceStatus(instance.instance_name);
 
-    return status;
+      // Update status in database
+      await db('whatsapp_instances')
+        .where({ id: instanceId })
+        .update({
+          status: status.instance?.state === 'open' ? 'connected' : 'disconnected',
+          updated_at: new Date(),
+        });
+
+      return status;
+    } catch (error) {
+      // Instance may not exist in Evolution API, mark as disconnected
+      await db('whatsapp_instances')
+        .where({ id: instanceId })
+        .update({
+          status: 'disconnected',
+          updated_at: new Date(),
+        });
+
+      return { instance: { instanceName: instance.instance_name, state: 'close' } };
+    }
   }
 
   async sendMessage(

@@ -85,6 +85,40 @@ router.get('/instances/:id/status', requireAuth, tenantIsolation, async (req, re
   }
 });
 
+// Delete instance
+router.delete('/instances/:id', requireAuth, tenantIsolation, async (req, res) => {
+  try {
+    const { db } = await import('../config/database');
+    const { evolutionApi } = await import('../services/evolutionApi');
+
+    const instance = await db('whatsapp_instances')
+      .where({ id: req.params.id, tenant_id: req.context!.tenantId })
+      .first();
+
+    if (!instance) {
+      res.status(404).json({ error: 'Instance not found' });
+      return;
+    }
+
+    // Try to delete from Evolution API (ignore errors if already deleted)
+    try {
+      await evolutionApi.deleteInstance(instance.instance_name);
+    } catch (e) {
+      // Instance may already be deleted in Evolution API
+    }
+
+    // Delete from database
+    await db('whatsapp_instances')
+      .where({ id: req.params.id })
+      .delete();
+
+    res.json({ message: 'Instance deleted' });
+  } catch (error) {
+    console.error('Failed to delete instance:', error);
+    res.status(500).json({ error: 'Failed to delete instance' });
+  }
+});
+
 // Send message
 router.post('/messages', requireAuth, tenantIsolation, validate(sendMessageSchema), async (req, res) => {
   try {
