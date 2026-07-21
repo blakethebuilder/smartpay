@@ -15,6 +15,7 @@ import webhookRoutes from './api/webhooks';
 import demoRoutes from './api/demo';
 import messagingRoutes from './api/messaging';
 import whatsappSyncRoutes from './api/whatsappSync';
+import usersRoutes from './api/users';
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use(`/api/${config.apiVersion}/invoices`, invoiceRoutes);
 app.use(`/api/${config.apiVersion}/whatsapp`, whatsappRoutes);
 app.use(`/api/${config.apiVersion}/messaging`, messagingRoutes);
 app.use(`/api/${config.apiVersion}/whatsapp-sync`, whatsappSyncRoutes);
+app.use(`/api/${config.apiVersion}/users`, usersRoutes);
 
 // Webhook routes (no auth required)
 app.use('/webhooks', webhookRoutes);

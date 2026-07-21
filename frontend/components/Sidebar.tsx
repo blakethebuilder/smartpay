@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   CreditCard,
   Menu,
+  UserCog,
 } from 'lucide-react';
 
 const navigation = [
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Payments', href: '/payments', icon: CreditCard },
   { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'WhatsApp', href: '/whatsapp', icon: MessageSquare },
+  { name: 'Team', href: '/users', icon: UserCog },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
