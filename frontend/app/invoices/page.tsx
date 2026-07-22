@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '@/lib/hooks';
 import { useAuthStore } from '@/lib/store';
-import { invoiceApi, customerApi } from '@/lib/api';
+import { invoiceApi, customerApi, api } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { DataTable, StatusBadge, Spinner, Modal } from '@/components/ui';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -19,6 +19,7 @@ import {
   Filter,
   FileText,
   Link2,
+  Trash2,
 } from 'lucide-react';
 
 export default function InvoicesPage() {
@@ -76,6 +77,17 @@ export default function InvoicesPage() {
       toast.error(error.response?.data?.error || 'Failed to generate link');
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleDeleteInvoice = async (invoiceId: string) => {
+    if (!confirm('Delete this invoice?')) return;
+    try {
+      await api.delete(`/invoices/${invoiceId}`);
+      toast.success('Invoice deleted');
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to delete invoice');
     }
   };
 
@@ -142,6 +154,17 @@ export default function InvoicesPage() {
             >
               <Link2 className="h-3.5 w-3.5 mr-1" />
               Get Link
+            </button>
+          )}
+          {item.status !== 'paid' && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteInvoice(item.id);
+              }}
+              className="inline-flex items-center px-2 py-1.5 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           )}
         </div>

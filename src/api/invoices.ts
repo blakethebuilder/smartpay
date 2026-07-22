@@ -115,6 +115,41 @@ router.get('/:id', requireAuth, tenantIsolation, async (req, res) => {
   }
 });
 
+// Delete invoice
+router.delete('/:id', requireAuth, tenantIsolation, async (req, res) => {
+  try {
+    const invoice = await db('invoices')
+      .where({ id: req.params.id, tenant_id: req.context!.tenantId })
+      .first();
+
+    if (!invoice) {
+      res.status(404).json({ error: 'Invoice not found' });
+      return;
+    }
+
+    // Don't delete if paid
+    if (invoice.status === 'paid') {
+      res.status(400).json({ error: 'Cannot delete paid invoices' });
+      return;
+    }
+
+    // Delete associated payments
+    await db('payments')
+      .where({ invoice_id: req.params.id })
+      .delete();
+
+    // Delete invoice
+    await db('invoices')
+      .where({ id: req.params.id })
+      .delete();
+
+    res.json({ message: 'Invoice deleted' });
+  } catch (error) {
+    console.error('Failed to delete invoice:', error);
+    res.status(500).json({ error: 'Failed to delete invoice' });
+  }
+});
+
 // Create invoice
 router.post('/', requireAuth, tenantIsolation, validate(createInvoiceSchema), async (req, res) => {
   try {
