@@ -39,8 +39,8 @@ export default function MessagesPage() {
   const fetchMessages = async () => {
     try {
       const response = await api.get(`/whatsapp/messages?page=${page}&limit=50`);
-      setMessages(response.data.messages || []);
-      setTotalPages(response.data.pagination?.pages || 1);
+      setMessages(Array.isArray(response.data) ? response.data : response.data.messages || []);
+      setTotalPages(1);
     } catch (error) {
       console.error('Failed to fetch messages:', error);
     } finally {
